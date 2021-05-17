@@ -57,10 +57,29 @@ export default function Episode({ episode }: EpisodeProps) {
     </div>
   );
 }
-
+// obrigatorio para rotas com geração estatica e com parametro dinamico (colchete no nome do arquivo)
+// fallback false só abre o que for carregado em paths,
+// fallback true carrega na hora que clicar
+// fallback blocking só exibe quando ja tiver carregado (sem tela de carregamento)
 export const getStaticPaths: GetStaticPaths = async () => {
+  const { data } = await api.get('episodes', {
+    params: {
+      _limit: 2,
+      _sort: 'published_at',
+      _order: 'desc'
+    }
+  })
+
+  const paths = data.map(episode =>{
+    return {
+      params: {
+        slug: episode.id
+      }
+    }
+  })
+  
   return {
-    paths: [],
+    paths,
     fallback: "blocking",
   };
 };
